@@ -18,5 +18,9 @@ services:
       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
     command: start-dev
 
+  shell:
+    build:
+      context: shell
+
 volumes:
   mongo_data:
