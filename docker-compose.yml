@@ -10,7 +10,7 @@ services:
 
   signon:
     image: quay.io/keycloak/keycloak
-    container_name: signon
+    container_name: keycloaksignon
     ports:
       - 8080:8080
     environment:
@@ -21,6 +21,8 @@ services:
   shell:
     build:
       context: shell
+    image: rarelyprolific/dexterity-shell:latest
+    container_name: dexterity-shell
 
 volumes:
   mongo_data:
