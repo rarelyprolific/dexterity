@@ -34,8 +34,8 @@ A system to help you design, build and support software systems.
 
 - Develop in `Go`.
 - Deploy in `Docker Compose` (localdev) and `Kubernetes` via `Helm` chart.
-- Use `Keycloak` for auth *(later)*
-- Find a lightweight database for persistence *(later - use file system with grep until we have enough of a database schema to pick a database technology)*
+- Use `Keycloak` for auth.
+- Use `Mongo DB` as the database for persistence.
 - Some sort of web and/or application GUI **(later)**
 
 ## Components
