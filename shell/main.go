@@ -1,41 +1,92 @@
 package main
 
 import (
-	"context"
+	"flag"
 	"fmt"
-	"io"
-	"net/http"
-	"time"
+	"os"
+	"strings"
 )
 
 func main() {
-	fmt.Println("Welcome to Dexterity Shell!")
+	// TODO: Add login via signon.
+	// TODO: Add database interactions.
 
-	// Example HTTP call
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	createIncidentSummary := flag.String("create-incident", "", "Incident Summary Description")
+	incidentResolutionSummary := flag.String("resolve-incident", "", "Incident Resolution Description")
+	createTaskSummary := flag.String("create-task", "", "Task Summary Description")
+	exampleHttpCall := flag.Bool("example-http-call", false, "Make an example HTTP call")
 
-	req, err := http.NewRequestWithContext(ctx, "GET", "https://www.rarelyprolific.co.uk", nil)
+	flag.Usage = showHelpText
 
-	if err != nil {
-		panic(err)
+	flag.Parse()
+
+	if len(os.Args) == 1 {
+		fmt.Println("ERROR! No arguments given!")
+		showHelpText()
 	}
 
-	resp, err := http.DefaultClient.Do(req)
-
-	if err != nil {
-		panic(err)
+	if *createIncidentSummary != "" {
+		createIncident(*createIncidentSummary)
 	}
 
-	defer resp.Body.Close()
-
-	bodyBytes, err := io.ReadAll(resp.Body)
-
-	if err != nil {
-		panic(err)
+	if *incidentResolutionSummary != "" {
+		resolveIncident(*incidentResolutionSummary)
 	}
 
-	rawHTML := string(bodyBytes)
+	if *createTaskSummary != "" {
+		createTask(*createTaskSummary)
+	}
 
-	fmt.Println("HTML HTTP Response Body:", rawHTML)
+	if *exampleHttpCall {
+		makeExampleHttpCall()
+	}
+}
+
+func createIncident(incidentSummary string) {
+	if strings.HasPrefix(incidentSummary, "-") {
+		printError(incidentSummary, "incident summary")
+		return
+	}
+
+	fmt.Println("An incident has been created:", incidentSummary)
+}
+
+func resolveIncident(incidentResolutionSummary string) {
+	if strings.HasPrefix(incidentResolutionSummary, "-") {
+		printError(incidentResolutionSummary, "incident resolution summary")
+		return
+	}
+
+	fmt.Println("An incident has been resolved:", incidentResolutionSummary)
+}
+
+func createTask(taskSummary string) {
+	if strings.HasPrefix(taskSummary, "-") {
+		printError(taskSummary, "task summary")
+		return
+	}
+
+	fmt.Println("A task has been created:", taskSummary)
+}
+
+func printError(invalidValue string, description string) {
+	errorMsg := fmt.Sprintf("ERROR! The value [%s] is not a valid %s!", invalidValue, description)
+	fmt.Println(errorMsg)
+}
+
+func showHelpText() {
+	var text strings.Builder
+
+	text.WriteString("\nDexterity Shell\n\n")
+	text.WriteString("This is the command line tool for interacting with the Dexterity system!\n\n")
+
+	text.WriteString("Usage:\n")
+	text.WriteString("  -create-incident 'The website is broken!'\n")
+	text.WriteString("  -resolve-incident 'The database is working again!'\n")
+	text.WriteString("  -create-task 'Add user login'\n")
+
+	text.WriteString("\nDebug:\n")
+	text.WriteString("  -example-http-call  -  Makes an example HTTP call to 'https://www.rarelyprolific.co.uk'\n")
+
+	fmt.Print(text.String())
 }
