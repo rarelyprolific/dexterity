@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+// makeExampleHttpCall makes an example HTTP call to 'https://www.rarelyprolific.co.uk'
 func makeExampleHttpCall() {
 	// Example HTTP call
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

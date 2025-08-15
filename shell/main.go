@@ -11,10 +11,10 @@ func main() {
 	// TODO: Add login via signon.
 	// TODO: Add database interactions.
 
-	createIncidentSummary := flag.String("create-incident", "", "Incident Summary Description")
-	incidentResolutionSummary := flag.String("resolve-incident", "", "Incident Resolution Description")
-	createTaskSummary := flag.String("create-task", "", "Task Summary Description")
-	exampleHttpCall := flag.Bool("example-http-call", false, "Make an example HTTP call")
+	createIncidentSummary := flag.String("create-incident", "", "incident summary Description")
+	incidentResolutionSummary := flag.String("resolve-incident", "", "incident resolution description")
+	createTaskSummary := flag.String("create-task", "", "task summary description")
+	exampleHttpCall := flag.Bool("example-http-call", false, "make an example HTTP call")
 
 	flag.Usage = showHelpText
 
@@ -23,6 +23,7 @@ func main() {
 	if len(os.Args) == 1 {
 		fmt.Println("ERROR! No arguments given!")
 		showHelpText()
+		os.Exit(1)
 	}
 
 	if *createIncidentSummary != "" {
@@ -42,6 +43,7 @@ func main() {
 	}
 }
 
+// createIncident creates a new incident with the given summary.
 func createIncident(incidentSummary string) {
 	if strings.HasPrefix(incidentSummary, "-") {
 		printError(incidentSummary, "incident summary")
@@ -51,6 +53,7 @@ func createIncident(incidentSummary string) {
 	fmt.Println("An incident has been created:", incidentSummary)
 }
 
+// resolveIncident resolves an existing incident with the given incident resolution summary.
 func resolveIncident(incidentResolutionSummary string) {
 	if strings.HasPrefix(incidentResolutionSummary, "-") {
 		printError(incidentResolutionSummary, "incident resolution summary")
@@ -60,6 +63,7 @@ func resolveIncident(incidentResolutionSummary string) {
 	fmt.Println("An incident has been resolved:", incidentResolutionSummary)
 }
 
+// createTask creates a new task with the given summary.
 func createTask(taskSummary string) {
 	if strings.HasPrefix(taskSummary, "-") {
 		printError(taskSummary, "task summary")
@@ -69,11 +73,13 @@ func createTask(taskSummary string) {
 	fmt.Println("A task has been created:", taskSummary)
 }
 
+// printError prints an error relating to an invalid command line argument.
 func printError(invalidValue string, description string) {
 	errorMsg := fmt.Sprintf("ERROR! The value [%s] is not a valid %s!", invalidValue, description)
 	fmt.Println(errorMsg)
 }
 
+// showHelpText shows the help text for the application.
 func showHelpText() {
 	var text strings.Builder
 
