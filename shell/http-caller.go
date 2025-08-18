@@ -8,13 +8,12 @@ import (
 	"time"
 )
 
-// makeExampleHttpCall makes an example HTTP call to 'https://www.rarelyprolific.co.uk'
-func makeExampleHttpCall() {
-	// Example HTTP call
+// getJsonContent makes a GET request to a URL for JSON
+func getJsonContent(urlToRequest string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	req, err := http.NewRequestWithContext(ctx, "GET", "https://www.rarelyprolific.co.uk", nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", urlToRequest, nil)
 
 	if err != nil {
 		panic(err)
@@ -34,7 +33,5 @@ func makeExampleHttpCall() {
 		panic(err)
 	}
 
-	rawHTML := string(bodyBytes)
-
-	fmt.Println("HTML HTTP Response Body:", rawHTML)
+	fmt.Print(string(bodyBytes))
 }

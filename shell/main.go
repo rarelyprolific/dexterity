@@ -14,7 +14,7 @@ func main() {
 	createIncidentSummary := flag.String("create-incident", "", "incident summary Description")
 	incidentResolutionSummary := flag.String("resolve-incident", "", "incident resolution description")
 	createTaskSummary := flag.String("create-task", "", "task summary description")
-	exampleHttpCall := flag.Bool("example-http-call", false, "make an example HTTP call")
+	exampleJsonRequest := flag.Bool("example-json-request", false, "make an example request for JSON content")
 
 	flag.Usage = showHelpText
 
@@ -38,8 +38,8 @@ func main() {
 		createTask(*createTaskSummary)
 	}
 
-	if *exampleHttpCall {
-		makeExampleHttpCall()
+	if *exampleJsonRequest {
+		getJsonContent("http://localhost:8080/realms/master/.well-known/openid-configuration")
 	}
 }
 
@@ -92,7 +92,7 @@ func showHelpText() {
 	text.WriteString("  -create-task 'Add user login'\n")
 
 	text.WriteString("\nDebug:\n")
-	text.WriteString("  -example-http-call  -  Makes an example HTTP call to 'https://www.rarelyprolific.co.uk'\n")
+	text.WriteString("  -example-json-request  -  Makes an example HTTP call to get Keycloak sign on discovery JSON\n")
 
 	fmt.Print(text.String())
 }
