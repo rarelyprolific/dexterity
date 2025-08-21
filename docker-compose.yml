@@ -8,6 +8,15 @@ services:
       - mongo_data:/data/db
     restart: unless-stopped
 
+  mongodb-init:
+    image: mongo:8.0
+    container_name: mongodb-init
+    depends_on:
+      - mongodb
+    volumes:
+      - ./mongodb-init:/init
+    entrypoint: ["mongosh", "mongodb://mongodb:27017/dexterity", "/init/seed-incidents-testdata.js"]
+
   signon:
     image: quay.io/keycloak/keycloak
     container_name: keycloaksignon
