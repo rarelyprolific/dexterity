@@ -1,10 +1,16 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 func main() {
@@ -30,5 +36,34 @@ var incidents = []incident{
 }
 
 func getIncidents(c *gin.Context) {
-	c.JSON(http.StatusOK, incidents)
+	// Create a context with timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Replace with your connection string if needed
+	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+
+	client, err := mongo.Connect(clientOptions)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Access a specific database and collection
+	incidents := client.Database("dexterity").Collection("incidents")
+
+	filter := bson.M{}
+
+	cursor, err := incidents.Find(ctx, filter)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer cursor.Close(ctx)
+
+	var incidentsFound []bson.M
+
+	if err = cursor.All(ctx, &incidentsFound); err != nil {
+		log.Fatal(err)
+	}
+
+	c.JSON(http.StatusOK, incidentsFound)
 }
