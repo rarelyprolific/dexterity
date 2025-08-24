@@ -15,7 +15,7 @@ services:
       - mongodb
     volumes:
       - ./mongodb-init:/init
-    entrypoint: ["mongosh", "mongodb://mongodb:27017/dexterity", "/init/seed-incidents-testdata.js"]
+    entrypoint: ["mongosh", "mongodb://mongodb:27017/dexterity", "/init/seed-incidents-testdata.js", "/init/seed-tasks-testdata.js", "/init/seed-wiki-testdata.js"]
 
   signon:
     image: quay.io/keycloak/keycloak
