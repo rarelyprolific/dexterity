@@ -11,8 +11,11 @@ func main() {
 	// TODO: Add login via signon.
 	// TODO: Add database interactions.
 
-	createIncidentSummary := flag.String("create-incident", "", "incident summary Description")
+	listIncidentsCommand := flag.Bool("list-incidents", false, "list incidents")
+	showIncidentIdentifier := flag.String("show-incident", "", "show incidents")
+	createIncidentSummary := flag.String("create-incident", "", "incident summary description")
 	incidentResolutionSummary := flag.String("resolve-incident", "", "incident resolution description")
+
 	createTaskSummary := flag.String("create-task", "", "task summary description")
 	exampleJsonRequest := flag.Bool("example-json-request", false, "make an example request for JSON content")
 
@@ -24,6 +27,14 @@ func main() {
 		fmt.Println("ERROR! No arguments given!")
 		showHelpText()
 		os.Exit(1)
+	}
+
+	if *listIncidentsCommand {
+		listIncidents()
+	}
+
+	if *showIncidentIdentifier != "" {
+		showIncident(*showIncidentIdentifier)
 	}
 
 	if *createIncidentSummary != "" {
@@ -41,6 +52,21 @@ func main() {
 	if *exampleJsonRequest {
 		getJsonContent("http://localhost:8080/realms/master/.well-known/openid-configuration")
 	}
+}
+
+// listIncidents lists incidents.
+func listIncidents() {
+	fmt.Println("Listing all incidents")
+}
+
+// showIncident shows a specific incident.
+func showIncident(incidentIdentifier string) {
+	if strings.HasPrefix(incidentIdentifier, "-") {
+		printError(incidentIdentifier, "incident identifier")
+		return
+	}
+
+	fmt.Println("Showing incident:", incidentIdentifier)
 }
 
 // createIncident creates a new incident with the given summary.
@@ -87,6 +113,8 @@ func showHelpText() {
 	text.WriteString("This is the command line tool for interacting with the Dexterity system!\n\n")
 
 	text.WriteString("Usage:\n")
+	text.WriteString("  -list-incidents\n")
+	text.WriteString("  -show-incident 'ICD001'\n")
 	text.WriteString("  -create-incident 'The website is broken!'\n")
 	text.WriteString("  -resolve-incident 'The database is working again!'\n")
 	text.WriteString("  -create-task 'Add user login'\n")
