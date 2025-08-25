@@ -50,8 +50,11 @@ type incident struct {
 func main() {
 	fmt.Println("Welcome to the Dexterity Incident API")
 
+	// TODO: Set up MongoDB connection and inject into Gin context.
+
 	router := gin.Default()
 	router.GET("/incidents", getIncidents)
+	// TODO: router.GET("/incidents/:id", getIncidentById)
 
 	router.Run("localhost:8900")
 }
