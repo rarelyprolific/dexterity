@@ -13,6 +13,40 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
+type question struct {
+	Question   string        `json:"question"`
+	AskedBy    string        `json:"askedBy"`
+	AskedOn    bson.DateTime `json:"askedOn"`
+	Answer     string        `json:"answer"`
+	AnsweredBy string        `json:"answeredBy"`
+	AnsweredOn bson.DateTime `json:"answeredOn"`
+}
+
+type incidentLog struct {
+	Description string        `json:"description"`
+	CreatedBy   string        `json:"createdBy"`
+	CreatedOn   bson.DateTime `json:"createdOn"`
+	Questions   []question    `json:"questions"`
+}
+
+type resolution struct {
+	Description string        `json:"description"`
+	ResolvedBy  string        `json:"resolvedBy"`
+	ResolvedOn  bson.DateTime `json:"resolvedOn"`
+}
+
+type incident struct {
+	ID            bson.ObjectID `bson:"_id" json:"id"`
+	Summary       string        `json:"summary"`
+	Status        string        `json:"status"`
+	CreatedBy     string        `json:"createdBy"`
+	CreatedOn     bson.DateTime `json:"createdOn"`
+	LastUpdatedBy string        `json:"lastUpdatedBy"`
+	LastUpdatedOn bson.DateTime `json:"lastUpdatedOn"`
+	Log           []incidentLog `json:"log"`
+	Resolution    resolution    `json:"resolution"`
+}
+
 func main() {
 	fmt.Println("Welcome to the Dexterity Incident API")
 
@@ -20,19 +54,6 @@ func main() {
 	router.GET("/incidents", getIncidents)
 
 	router.Run("localhost:8900")
-}
-
-type incident struct {
-	ID    int    `json:"id"`
-	Title string `json:"summary"`
-}
-
-var incidents = []incident{
-	{ID: 1, Title: "The website has crashed"},
-	{ID: 2, Title: "User cannot log in"},
-	{ID: 3, Title: "There is an intermittent crash in a back end service"},
-	{ID: 4, Title: "A service won't start up due to an error"},
-	{ID: 5, Title: "A service runs out of memory shortly after starting up"},
 }
 
 func getIncidents(c *gin.Context) {
@@ -59,7 +80,7 @@ func getIncidents(c *gin.Context) {
 	}
 	defer cursor.Close(ctx)
 
-	var incidentsFound []bson.M
+	var incidentsFound []incident
 
 	if err = cursor.All(ctx, &incidentsFound); err != nil {
 		log.Fatal(err)

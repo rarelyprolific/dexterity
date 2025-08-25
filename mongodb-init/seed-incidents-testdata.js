@@ -48,7 +48,7 @@ db.incidents.insertMany([
                         askedOn: new Date(),
                         answer: "We logged a report from a user at around 3am this morning.",
                         answeredBy: "PlayerOne",
-                        answededOn: new Date()
+                        answeredOn: new Date()
                     },
                     {
                         question: "Is it ALL users or are we seeing SOME successful logins?",
@@ -89,7 +89,7 @@ db.incidents.insertMany([
                         askedOn: new Date(),
                         answer: "We tried using 'UserPortal' because it was the only method we were aware of.",
                         answeredBy: "PlayerOne",
-                        answededOn: new Date()
+                        answeredOn: new Date()
                     }
                 ]
             },
@@ -104,7 +104,7 @@ db.incidents.insertMany([
                         askedOn: new Date(),
                         answer: "Yes. Reset minotaur75's password successfully using 'UserMaintV1'.",
                         answeredBy: "PlayerOne",
-                        answededOn: new Date()
+                        answeredOn: new Date()
                     }
                 ]
             }
