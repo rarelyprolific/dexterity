@@ -13,7 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
-type question struct {
+type Question struct {
 	Question   string        `json:"question"`
 	AskedBy    string        `json:"askedBy"`
 	AskedOn    bson.DateTime `json:"askedOn"`
@@ -22,20 +22,20 @@ type question struct {
 	AnsweredOn bson.DateTime `json:"answeredOn"`
 }
 
-type incidentLog struct {
+type IncidentLog struct {
 	Description string        `json:"description"`
 	CreatedBy   string        `json:"createdBy"`
 	CreatedOn   bson.DateTime `json:"createdOn"`
-	Questions   []question    `json:"questions"`
+	Questions   []Question    `json:"questions"`
 }
 
-type resolution struct {
+type Resolution struct {
 	Description string        `json:"description"`
 	ResolvedBy  string        `json:"resolvedBy"`
 	ResolvedOn  bson.DateTime `json:"resolvedOn"`
 }
 
-type incident struct {
+type Incident struct {
 	ID            bson.ObjectID `bson:"_id" json:"id"`
 	Summary       string        `json:"summary"`
 	Status        string        `json:"status"`
@@ -43,51 +43,83 @@ type incident struct {
 	CreatedOn     bson.DateTime `json:"createdOn"`
 	LastUpdatedBy string        `json:"lastUpdatedBy"`
 	LastUpdatedOn bson.DateTime `json:"lastUpdatedOn"`
-	Log           []incidentLog `json:"log"`
-	Resolution    resolution    `json:"resolution"`
+	Log           []IncidentLog `json:"log"`
+	Resolution    Resolution    `json:"resolution"`
 }
 
 func main() {
 	fmt.Println("Welcome to the Dexterity Incident API")
-
-	// TODO: Set up MongoDB connection and inject into Gin context.
+	fmt.Println()
 
 	router := gin.Default()
+
+	// Set up Mongo DB connection and inject into Gin context as middleware.
+	client, err := initialiseMongoDbClient("mongodb://localhost:27017")
+	if err != nil {
+		log.Fatalf("Failed to initialise connection to Mongo DB: %v", err)
+	}
+
+	router.Use(mongoMiddleware(client))
+
+	// Set up routes to API endpoints
 	router.GET("/incidents", getIncidents)
 	// TODO: router.GET("/incidents/:id", getIncidentById)
 
 	router.Run("localhost:8900")
 }
 
-func getIncidents(c *gin.Context) {
-	// Create a context with timeout
+// initialiseMongoDbClient sets up the connection to Mongo DB
+func initialiseMongoDbClient(uri string) (*mongo.Client, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	// Replace with your connection string if needed
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	clientOpts := options.Client().
+		ApplyURI(uri).
+		// Set connection pool size
+		SetMaxPoolSize(20)
 
-	client, err := mongo.Connect(clientOptions)
+	client, err := mongo.Connect(clientOpts)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	// Access a specific database and collection
-	incidents := client.Database("dexterity").Collection("incidents")
+	// Ping to verify connection
+	if err := client.Ping(ctx, nil); err != nil {
+		return nil, err
+	}
+
+	return client, nil
+}
+
+// mongoMiddleware adds the Mongo DB client to Gin as middleware
+func mongoMiddleware(client *mongo.Client) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Set("mongoClient", client)
+		c.Next()
+	}
+}
+
+// getIncidents gets all the incidents
+func getIncidents(c *gin.Context) {
+	client := c.MustGet("mongoClient").(*mongo.Client)
+	incidentsCollection := client.Database("dexterity").Collection("incidents")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
 	filter := bson.M{}
 
-	cursor, err := incidents.Find(ctx, filter)
+	cursor, err := incidentsCollection.Find(ctx, filter)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer cursor.Close(ctx)
 
-	var incidentsFound []incident
+	var incidents []Incident
 
-	if err = cursor.All(ctx, &incidentsFound); err != nil {
+	if err = cursor.All(ctx, &incidents); err != nil {
 		log.Fatal(err)
 	}
 
-	c.JSON(http.StatusOK, incidentsFound)
+	c.JSON(http.StatusOK, incidents)
 }
