@@ -63,7 +63,7 @@ func main() {
 
 	// Set up routes to API endpoints
 	router.GET("/incidents", getIncidents)
-	// TODO: router.GET("/incidents/:id", getIncidentById)
+	router.GET("/incidents/:id", getIncidentById)
 
 	router.Run("localhost:8900")
 }
@@ -122,4 +122,34 @@ func getIncidents(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, incidents)
+}
+
+// getIncidentById gets a single incident by ID
+func getIncidentById(c *gin.Context) {
+	client := c.MustGet("mongoClient").(*mongo.Client)
+	incidentsCollection := client.Database("dexterity").Collection("incidents")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	incidentId := c.Param("id")
+
+	objectId, err := bson.ObjectIDFromHex(incidentId)
+
+	if err != nil {
+		// TODO: Don't expose internal errors. Handle and return RESTful responses!
+		c.JSON(http.StatusBadRequest, fmt.Sprintf("invalid ObjectID: %s", err))
+		return
+	}
+
+	var result Incident
+	err = incidentsCollection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&result)
+
+	if err != nil {
+		// TODO: Don't expose internal errors. Handle and return RESTful responses!
+		c.JSON(http.StatusBadRequest, fmt.Sprintf("document not found: %s", err))
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
 }
