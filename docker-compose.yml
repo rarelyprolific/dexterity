@@ -19,7 +19,7 @@ services:
 
   signon:
     image: quay.io/keycloak/keycloak
-    container_name: keycloaksignon
+    container_name: signon
     ports:
       - 8080:8080
     environment:
@@ -27,11 +27,23 @@ services:
       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
     command: start-dev
 
+  incidentapi:
+    build:
+      context: apis/incident-api
+    image: rarelyprolific/dexterity-incidentapi:latest
+    container_name: incidentapi
+
+  taskapi:
+    build:
+      context: apis/task-api
+    image: rarelyprolific/dexterity-taskapi:latest
+    container_name: taskapi
+
   shell:
     build:
       context: shell
     image: rarelyprolific/dexterity-shell:latest
-    container_name: dexterity-shell
+    container_name: shell
 
 volumes:
   mongo_data:
