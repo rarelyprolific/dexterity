@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -54,7 +55,13 @@ func main() {
 	router := gin.Default()
 
 	// Set up Mongo DB connection and inject into Gin context as middleware.
-	client, err := initialiseMongoDbClient("mongodb://localhost:27017")
+	mongoUri := os.Getenv("MONGODB_URI")
+
+	if mongoUri == "" {
+		mongoUri = "mongodb://localhost:27017"
+	}
+
+	client, err := initialiseMongoDbClient(mongoUri)
 	if err != nil {
 		log.Fatalf("Failed to initialise connection to Mongo DB: %v", err)
 	}

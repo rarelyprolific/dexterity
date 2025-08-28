@@ -32,12 +32,16 @@ services:
       context: apis/incident-api
     image: rarelyprolific/dexterity-incidentapi:latest
     container_name: incidentapi
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017
 
   taskapi:
     build:
       context: apis/task-api
     image: rarelyprolific/dexterity-taskapi:latest
     container_name: taskapi
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017
 
   shell:
     build:
