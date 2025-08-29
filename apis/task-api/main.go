@@ -61,7 +61,7 @@ func main() {
 	router.GET("/tasks", getTasks)
 	router.GET("/tasks/:id", getTaskById)
 
-	router.Run("localhost:8900")
+	router.Run("0.0.0.0:8900")
 }
 
 // initialiseMongoDbClient sets up the connection to Mongo DB

@@ -32,6 +32,8 @@ services:
       context: apis/incident-api
     image: rarelyprolific/dexterity-incidentapi:latest
     container_name: incidentapi
+    ports:
+      - 8910:8900
     environment:
       - MONGODB_URI=mongodb://mongodb:27017
 
@@ -40,6 +42,8 @@ services:
       context: apis/task-api
     image: rarelyprolific/dexterity-taskapi:latest
     container_name: taskapi
+    ports:
+      - 8920:8900
     environment:
       - MONGODB_URI=mongodb://mongodb:27017
 
