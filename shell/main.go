@@ -1,15 +1,16 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
 	"strings"
+	"time"
 )
 
 func main() {
 	// TODO: Add login via signon.
-	// TODO: Add database interactions.
 
 	listIncidentsCommand := flag.Bool("list-incidents", false, "list incidents")
 	showIncidentIdentifier := flag.String("show-incident", "", "show incidents")
@@ -50,13 +51,37 @@ func main() {
 	}
 
 	if *exampleJsonRequest {
-		getJsonContent("http://localhost:8080/realms/master/.well-known/openid-configuration")
+		fmt.Println(getJsonContent("http://localhost:8080/realms/master/.well-known/openid-configuration", true))
 	}
+}
+
+type IncidentSummary struct {
+	ID        string    `json:"id"`
+	Summary   string    `json:"summary"`
+	Status    string    `json:"status"`
+	CreatedBy string    `json:"createdBy"`
+	CreatedOn time.Time `json:"createdOn"`
 }
 
 // listIncidents lists incidents.
 func listIncidents() {
-	fmt.Println("Listing all incidents")
+	incidents := getJsonContent("http://localhost:8910/incidents", false)
+
+	var incidentSummaryList []IncidentSummary
+
+	err := json.Unmarshal([]byte(incidents), &incidentSummaryList)
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Listing all incidents (ID  |  Status  |  Created On  |  Created By  |  Summary):")
+
+	for _, incident := range incidentSummaryList {
+		fmt.Printf("%s  |  %s  |  %s  |  %s  |  %s\n", incident.ID, incident.Status, incident.CreatedOn.Format("2006-01-02 15:04:05"), incident.CreatedBy, incident.Summary)
+	}
+
+	fmt.Println(len(incidentSummaryList), "incidents found!")
 }
 
 // showIncident shows a specific incident.

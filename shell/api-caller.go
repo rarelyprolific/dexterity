@@ -1,15 +1,16 @@
 package main
 
 import (
+	"bytes"
 	"context"
-	"fmt"
+	"encoding/json"
 	"io"
 	"net/http"
 	"time"
 )
 
 // getJsonContent makes a GET request to a URL for JSON
-func getJsonContent(urlToRequest string) {
+func getJsonContent(urlToRequest string, prettyPrint bool) string {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -33,5 +34,13 @@ func getJsonContent(urlToRequest string) {
 		panic(err)
 	}
 
-	fmt.Print(string(bodyBytes))
+	if prettyPrint {
+		var prettyJson bytes.Buffer
+
+		json.Indent(&prettyJson, bodyBytes, "", "  ")
+
+		return prettyJson.String()
+	} else {
+		return string(bodyBytes)
+	}
 }
