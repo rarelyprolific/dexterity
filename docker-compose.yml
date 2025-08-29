@@ -52,6 +52,8 @@ services:
       context: shell
     image: rarelyprolific/dexterity-shell:latest
     container_name: shell
+    environment:
+      - INCIDENT_API_URI=http://incidentapi:8900
 
 volumes:
   mongo_data:

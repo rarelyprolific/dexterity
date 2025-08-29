@@ -65,7 +65,13 @@ type IncidentSummary struct {
 
 // listIncidents lists incidents.
 func listIncidents() {
-	incidents := getJsonContent("http://localhost:8910/incidents", false)
+	incidentApiUri := os.Getenv("INCIDENT_API_URI")
+
+	if incidentApiUri == "" {
+		incidentApiUri = "http://localhost:8910"
+	}
+
+	incidents := getJsonContent(incidentApiUri+"/incidents", false)
 
 	var incidentSummaryList []IncidentSummary
 
