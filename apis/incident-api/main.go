@@ -48,6 +48,14 @@ type Incident struct {
 	Resolution    Resolution    `json:"resolution"`
 }
 
+type IncidentSummary struct {
+	ID        string    `json:"id"`
+	Summary   string    `json:"summary"`
+	Status    string    `json:"status"`
+	CreatedBy string    `json:"createdBy"`
+	CreatedOn time.Time `json:"createdOn"`
+}
+
 func main() {
 	fmt.Println("Welcome to the Dexterity Incident API")
 	fmt.Println()
@@ -106,7 +114,7 @@ func mongoMiddleware(client *mongo.Client) gin.HandlerFunc {
 	}
 }
 
-// getIncidents gets all the incidents
+// getIncidents get summaries for all incidents
 func getIncidents(c *gin.Context) {
 	client := c.MustGet("mongoClient").(*mongo.Client)
 	incidentsCollection := client.Database("dexterity").Collection("incidents")
@@ -122,13 +130,13 @@ func getIncidents(c *gin.Context) {
 	}
 	defer cursor.Close(ctx)
 
-	var incidents []Incident
+	var incidentSummaries []IncidentSummary
 
-	if err = cursor.All(ctx, &incidents); err != nil {
+	if err = cursor.All(ctx, &incidentSummaries); err != nil {
 		log.Fatal(err)
 	}
 
-	c.JSON(http.StatusOK, incidents)
+	c.JSON(http.StatusOK, incidentSummaries)
 }
 
 // getIncidentById gets a single incident by ID
