@@ -38,11 +38,11 @@ type Task struct {
 }
 
 type TaskSummary struct {
-	ID        string    `json:"id"`
-	Summary   string    `json:"summary"`
-	Status    string    `json:"status"`
-	CreatedBy string    `json:"createdBy"`
-	CreatedOn time.Time `json:"createdOn"`
+	ID        bson.ObjectID `bson:"_id" json:"id"`
+	Summary   string        `json:"summary"`
+	Status    string        `json:"status"`
+	CreatedBy string        `json:"createdBy"`
+	CreatedOn time.Time     `json:"createdOn"`
 }
 
 func main() {
