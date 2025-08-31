@@ -15,3 +15,8 @@ spec:
       containers:
       - name: shell
         image: rarelyprolific/dexterity-shell:latest
+        env:
+        - name: INCIDENT_API_URI
+          value: "http://{{ $.Release.Name }}-incidentapi.default.svc.cluster.local"
+        - name: TASK_API_URI
+          value: "http://{{ $.Release.Name }}-taskapi.default.svc.cluster.local"
