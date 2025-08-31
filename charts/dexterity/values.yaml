@@ -121,3 +121,9 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+apis:
+  - name: incidentapi
+    image: rarelyprolific/dexterity-incidentapi:latest
+  - name: taskapi
+    image: rarelyprolific/dexterity-taskapi:latest
