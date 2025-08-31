@@ -37,6 +37,14 @@ type Task struct {
 	Consequences  string        `json:"consequences"`
 }
 
+type TaskSummary struct {
+	ID        string    `json:"id"`
+	Summary   string    `json:"summary"`
+	Status    string    `json:"status"`
+	CreatedBy string    `json:"createdBy"`
+	CreatedOn time.Time `json:"createdOn"`
+}
+
 func main() {
 	fmt.Println("Welcome to the Dexterity Task API")
 	fmt.Println()
@@ -111,13 +119,13 @@ func getTasks(c *gin.Context) {
 	}
 	defer cursor.Close(ctx)
 
-	var tasks []Task
+	var taskSummaries []TaskSummary
 
-	if err = cursor.All(ctx, &tasks); err != nil {
+	if err = cursor.All(ctx, &taskSummaries); err != nil {
 		log.Fatal(err)
 	}
 
-	c.JSON(http.StatusOK, tasks)
+	c.JSON(http.StatusOK, taskSummaries)
 }
 
 // getTaskById gets a single task by ID
