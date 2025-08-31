@@ -54,6 +54,7 @@ services:
     container_name: shell
     environment:
       - INCIDENT_API_URI=http://incidentapi:8900
+      - TASK_API_URI=http://taskapi:8900
 
 volumes:
   mongo_data:

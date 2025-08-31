@@ -17,6 +17,7 @@ func main() {
 	createIncidentSummary := flag.String("create-incident", "", "incident summary description")
 	incidentResolutionSummary := flag.String("resolve-incident", "", "incident resolution description")
 
+	listTasksCommand := flag.Bool("list-tasks", false, "list tasks")
 	createTaskSummary := flag.String("create-task", "", "task summary description")
 	exampleJsonRequest := flag.Bool("example-json-request", false, "make an example request for JSON content")
 
@@ -44,6 +45,10 @@ func main() {
 
 	if *incidentResolutionSummary != "" {
 		resolveIncident(*incidentResolutionSummary)
+	}
+
+	if *listTasksCommand {
+		listTasks()
 	}
 
 	if *createTaskSummary != "" {
@@ -120,6 +125,33 @@ func resolveIncident(incidentResolutionSummary string) {
 	fmt.Println("An incident has been resolved:", incidentResolutionSummary)
 }
 
+// listIncidents lists tasks.
+func listTasks() {
+	taskApiUri := os.Getenv("TASK_API_URI")
+
+	if taskApiUri == "" {
+		taskApiUri = "http://localhost:8920"
+	}
+
+	tasks := getJsonContent(taskApiUri+"/tasks", false)
+
+	var taskSummaryList []IncidentSummary
+
+	err := json.Unmarshal([]byte(tasks), &taskSummaryList)
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Listing all tasks (ID  |  Status  |  Created On  |  Created By  |  Summary):")
+
+	for _, task := range taskSummaryList {
+		fmt.Printf("%s  |  %s  |  %s  |  %s  |  %s\n", task.ID, task.Status, task.CreatedOn.Format("2006-01-02 15:04:05"), task.CreatedBy, task.Summary)
+	}
+
+	fmt.Println(len(taskSummaryList), "tasks found!")
+}
+
 // createTask creates a new task with the given summary.
 func createTask(taskSummary string) {
 	if strings.HasPrefix(taskSummary, "-") {
@@ -148,6 +180,10 @@ func showHelpText() {
 	text.WriteString("  -show-incident 'ICD001'\n")
 	text.WriteString("  -create-incident 'The website is broken!'\n")
 	text.WriteString("  -resolve-incident 'The database is working again!'\n")
+
+	text.WriteString("\n")
+
+	text.WriteString("  -list-tasks\n")
 	text.WriteString("  -create-task 'Add user login'\n")
 
 	text.WriteString("\nDebug:\n")
