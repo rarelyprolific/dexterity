@@ -20,5 +20,5 @@ spec:
         env:
         - name: MONGODB_URI
           value: "mongodb://{{ $.Release.Name }}-mongodb.default.svc.cluster.local:27017"
-
+---
 {{- end }}
