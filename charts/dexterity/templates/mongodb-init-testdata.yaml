@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mongodb-init
+spec:
+  template:
+    spec:
+      containers:
+      - name: seed
+        image: mongo:8.0
+        command: [
+          "mongosh",
+          "mongodb://{{ .Release.Name }}-mongodb.default.svc.cluster.local:27017/dexterity",
+          "/init/seed-incidents-testdata.js",
+          "/init/seed-tasks-testdata.js",
+          "/init/seed-wiki-testdata.js"
+        ]
+        volumeMounts:
+        - name: init-scripts
+          mountPath: /init
+      restartPolicy: Never
+      volumes:
+      - name: init-scripts
+        configMap:
+          name: mongodb-init-scripts
