@@ -1,8 +1,11 @@
-Thank you for installing {{ .Chart.Name }}.
-
-Your release is named {{ .Release.Name }}.
+Thank you for installing {{ .Chart.Name }}. Your release is named {{ .Release.Name }}.
 
 To learn more about the release, try:
 
   $ helm status {{ .Release.Name }}
   $ helm get all {{ .Release.Name }}
+
+To expose the APIs externally, get the pod names (kubectl get pods) and try:
+
+  $ kubectl port-forward pod/<{{ .Release.Name }}-incidentapi-pod-name> 8910:8900
+  $ kubectl port-forward pod/<{{ .Release.Name }}-taskapi-pod-name> 8920:8900
