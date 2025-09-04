@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"time"
+
+	"github.com/rarelyprolific/dexterity/shell/incident"
+	"github.com/rarelyprolific/dexterity/shell/task"
 )
 
 func main() {
@@ -60,14 +62,6 @@ func main() {
 	}
 }
 
-type IncidentSummary struct {
-	ID        string    `json:"id"`
-	Summary   string    `json:"summary"`
-	Status    string    `json:"status"`
-	CreatedBy string    `json:"createdBy"`
-	CreatedOn time.Time `json:"createdOn"`
-}
-
 // listIncidents lists incidents.
 func listIncidents() {
 	incidentApiUri := os.Getenv("INCIDENT_API_URI")
@@ -78,7 +72,7 @@ func listIncidents() {
 
 	incidents := getJsonContent(incidentApiUri+"/incidents", false)
 
-	var incidentSummaryList []IncidentSummary
+	var incidentSummaryList []incident.Summary
 
 	err := json.Unmarshal([]byte(incidents), &incidentSummaryList)
 
@@ -125,14 +119,6 @@ func resolveIncident(incidentResolutionSummary string) {
 	fmt.Println("An incident has been resolved:", incidentResolutionSummary)
 }
 
-type TaskSummary struct {
-	ID        string    `json:"id"`
-	Summary   string    `json:"summary"`
-	Status    string    `json:"status"`
-	CreatedBy string    `json:"createdBy"`
-	CreatedOn time.Time `json:"createdOn"`
-}
-
 // listIncidents lists tasks.
 func listTasks() {
 	taskApiUri := os.Getenv("TASK_API_URI")
@@ -143,7 +129,7 @@ func listTasks() {
 
 	tasks := getJsonContent(taskApiUri+"/tasks", false)
 
-	var taskSummaryList []TaskSummary
+	var taskSummaryList []task.Summary
 
 	err := json.Unmarshal([]byte(tasks), &taskSummaryList)
 
