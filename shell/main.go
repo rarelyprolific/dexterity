@@ -98,7 +98,7 @@ func listIncidents() {
 // showIncident shows a specific incident.
 func showIncident(incidentIdentifier string) {
 	if strings.HasPrefix(incidentIdentifier, "-") {
-		printError(incidentIdentifier, "incident identifier")
+		fmt.Println(formatError(incidentIdentifier, "incident identifier"))
 		return
 	}
 
@@ -108,7 +108,7 @@ func showIncident(incidentIdentifier string) {
 // createIncident creates a new incident with the given summary.
 func createIncident(incidentSummary string) {
 	if strings.HasPrefix(incidentSummary, "-") {
-		printError(incidentSummary, "incident summary")
+		fmt.Println(formatError(incidentSummary, "incident summary"))
 		return
 	}
 
@@ -118,7 +118,7 @@ func createIncident(incidentSummary string) {
 // resolveIncident resolves an existing incident with the given incident resolution summary.
 func resolveIncident(incidentResolutionSummary string) {
 	if strings.HasPrefix(incidentResolutionSummary, "-") {
-		printError(incidentResolutionSummary, "incident resolution summary")
+		fmt.Println(formatError(incidentResolutionSummary, "incident resolution summary"))
 		return
 	}
 
@@ -163,17 +163,16 @@ func listTasks() {
 // createTask creates a new task with the given summary.
 func createTask(taskSummary string) {
 	if strings.HasPrefix(taskSummary, "-") {
-		printError(taskSummary, "task summary")
+		fmt.Println(formatError(taskSummary, "task summary"))
 		return
 	}
 
 	fmt.Println("A task has been created:", taskSummary)
 }
 
-// printError prints an error relating to an invalid command line argument.
-func printError(invalidValue string, description string) {
-	errorMsg := fmt.Sprintf("ERROR! The value [%s] is not a valid %s!", invalidValue, description)
-	fmt.Println(errorMsg)
+// formatError builds an error string relating to an invalid command line argument.
+func formatError(invalidValue string, description string) string {
+	return fmt.Sprintf("ERROR! The value [%s] is not a valid %s!", invalidValue, description)
 }
 
 // showHelpText shows the help text for the application.
