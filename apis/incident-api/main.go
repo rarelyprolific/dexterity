@@ -9,52 +9,11 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rarelyprolific/dexterity/incident-api/models"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
-
-type Question struct {
-	Question   string        `json:"question"`
-	AskedBy    string        `json:"askedBy"`
-	AskedOn    bson.DateTime `json:"askedOn"`
-	Answer     string        `json:"answer"`
-	AnsweredBy string        `json:"answeredBy"`
-	AnsweredOn bson.DateTime `json:"answeredOn"`
-}
-
-type IncidentLog struct {
-	Description string        `json:"description"`
-	CreatedBy   string        `json:"createdBy"`
-	CreatedOn   bson.DateTime `json:"createdOn"`
-	Questions   []Question    `json:"questions"`
-}
-
-type Resolution struct {
-	Description string        `json:"description"`
-	ResolvedBy  string        `json:"resolvedBy"`
-	ResolvedOn  bson.DateTime `json:"resolvedOn"`
-}
-
-type Incident struct {
-	ID            bson.ObjectID `bson:"_id" json:"id"`
-	Summary       string        `json:"summary"`
-	Status        string        `json:"status"`
-	CreatedBy     string        `json:"createdBy"`
-	CreatedOn     bson.DateTime `json:"createdOn"`
-	LastUpdatedBy string        `json:"lastUpdatedBy"`
-	LastUpdatedOn bson.DateTime `json:"lastUpdatedOn"`
-	Log           []IncidentLog `json:"log"`
-	Resolution    Resolution    `json:"resolution"`
-}
-
-type IncidentSummary struct {
-	ID        bson.ObjectID `bson:"_id" json:"id"`
-	Summary   string        `json:"summary"`
-	Status    string        `json:"status"`
-	CreatedBy string        `json:"createdBy"`
-	CreatedOn time.Time     `json:"createdOn"`
-}
 
 func main() {
 	fmt.Println("Welcome to the Dexterity Incident API")
@@ -130,7 +89,7 @@ func getIncidents(c *gin.Context) {
 	}
 	defer cursor.Close(ctx)
 
-	var incidentSummaries []IncidentSummary
+	var incidentSummaries []models.IncidentSummary
 
 	if err = cursor.All(ctx, &incidentSummaries); err != nil {
 		log.Fatal(err)
@@ -157,7 +116,7 @@ func getIncidentById(c *gin.Context) {
 		return
 	}
 
-	var result Incident
+	var result models.Incident
 	err = incidentsCollection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&result)
 
 	if err != nil {
