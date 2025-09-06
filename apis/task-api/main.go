@@ -9,41 +9,11 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rarelyprolific/dexterity/task-api/models"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
-
-type Question struct {
-	Question   string        `json:"question"`
-	AskedBy    string        `json:"askedBy"`
-	AskedOn    bson.DateTime `json:"askedOn"`
-	Answer     string        `json:"answer"`
-	AnsweredBy string        `json:"answeredBy"`
-	AnsweredOn bson.DateTime `json:"answeredOn"`
-}
-
-type Task struct {
-	ID            bson.ObjectID `bson:"_id" json:"id"`
-	Summary       string        `json:"summary"`
-	Status        string        `json:"status"`
-	CreatedBy     string        `json:"createdBy"`
-	CreatedOn     bson.DateTime `json:"createdOn"`
-	LastUpdatedBy string        `json:"lastUpdatedBy"`
-	LastUpdatedOn bson.DateTime `json:"lastUpdatedOn"`
-	Description   string        `json:"description"`
-	Questions     []Question    `json:"questions"`
-	Justification string        `json:"justification"`
-	Consequences  string        `json:"consequences"`
-}
-
-type TaskSummary struct {
-	ID        bson.ObjectID `bson:"_id" json:"id"`
-	Summary   string        `json:"summary"`
-	Status    string        `json:"status"`
-	CreatedBy string        `json:"createdBy"`
-	CreatedOn time.Time     `json:"createdOn"`
-}
 
 func main() {
 	fmt.Println("Welcome to the Dexterity Task API")
@@ -119,7 +89,7 @@ func getTasks(c *gin.Context) {
 	}
 	defer cursor.Close(ctx)
 
-	var taskSummaries []TaskSummary
+	var taskSummaries []models.TaskSummary
 
 	if err = cursor.All(ctx, &taskSummaries); err != nil {
 		log.Fatal(err)
@@ -146,7 +116,7 @@ func getTaskById(c *gin.Context) {
 		return
 	}
 
-	var result Task
+	var result models.Task
 	err = tasksCollection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&result)
 
 	if err != nil {
