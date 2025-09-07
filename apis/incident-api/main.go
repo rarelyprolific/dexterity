@@ -9,7 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/rarelyprolific/dexterity/incident-api/models"
-	"github.com/rarelyprolific/dexterity/incident-api/mongoinit"
+	"github.com/rarelyprolific/dexterity/incident-api/mongoconnection"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
@@ -19,7 +19,7 @@ func main() {
 	fmt.Println()
 
 	// Set up the Mongo DB client
-	mongoClient, err := mongoinit.CreateClient()
+	mongoClient, err := mongoconnection.CreateClient()
 	if err != nil {
 		log.Fatalf("Failed to initialise connection to Mongo DB: %v", err)
 	}

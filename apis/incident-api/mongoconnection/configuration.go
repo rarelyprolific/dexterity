@@ -1,4 +1,4 @@
-package mongoinit
+package mongoconnection
 
 import "os"
 
