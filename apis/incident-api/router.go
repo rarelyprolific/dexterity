@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/rarelyprolific/dexterity/incident-api/mongoconnection"
+	"github.com/rarelyprolific/dexterity/incident-api/routes"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
@@ -13,8 +14,8 @@ func CreateRouter(mongoClient *mongo.Client) *gin.Engine {
 	router.Use(mongoconnection.InjectAsMiddleware(mongoClient))
 
 	// Set up routes to API endpoints
-	router.GET("/incidents", getIncidents)
-	router.GET("/incidents/:id", getIncidentById)
+	router.GET("/incidents", routes.GetIncidents)
+	router.GET("/incidents/:id", routes.GetIncidentById)
 
 	return router
 }

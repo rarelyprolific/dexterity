@@ -49,7 +49,9 @@ func getTasks(c *gin.Context) {
 	var taskSummaries []models.TaskSummary
 
 	if err = cursor.All(ctx, &taskSummaries); err != nil {
-		log.Fatal(err)
+		log.Printf("failed to fetch tasks: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch tasks"})
+		return
 	}
 
 	c.JSON(http.StatusOK, taskSummaries)
