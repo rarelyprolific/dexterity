@@ -5,72 +5,29 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rarelyprolific/dexterity/task-api/models"
+	"github.com/rarelyprolific/dexterity/task-api/mongoconnection"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
-	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 func main() {
 	fmt.Println("Welcome to the Dexterity Task API")
 	fmt.Println()
 
-	router := gin.Default()
-
-	// Set up Mongo DB connection and inject into Gin context as middleware.
-	mongoUri := os.Getenv("MONGODB_URI")
-
-	if mongoUri == "" {
-		mongoUri = "mongodb://localhost:27017"
-	}
-
-	client, err := initialiseMongoDbClient(mongoUri)
+	// Set up the Mongo DB client
+	mongoClient, err := mongoconnection.CreateClient()
 	if err != nil {
 		log.Fatalf("Failed to initialise connection to Mongo DB: %v", err)
 	}
 
-	router.Use(mongoMiddleware(client))
-
-	// Set up routes to API endpoints
-	router.GET("/tasks", getTasks)
-	router.GET("/tasks/:id", getTaskById)
+	// Create and start the Gin router with Mongo middleware and routes
+	router := CreateRouter(mongoClient)
 
 	router.Run("0.0.0.0:8900")
-}
-
-// initialiseMongoDbClient sets up the connection to Mongo DB
-func initialiseMongoDbClient(uri string) (*mongo.Client, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	clientOpts := options.Client().
-		ApplyURI(uri).
-		// Set connection pool size
-		SetMaxPoolSize(20)
-
-	client, err := mongo.Connect(clientOpts)
-	if err != nil {
-		return nil, err
-	}
-
-	// Ping to verify connection
-	if err := client.Ping(ctx, nil); err != nil {
-		return nil, err
-	}
-
-	return client, nil
-}
-
-// mongoMiddleware adds the Mongo DB client to Gin as middleware
-func mongoMiddleware(client *mongo.Client) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Set("mongoClient", client)
-		c.Next()
-	}
 }
 
 // getTasks gets all the tasks
