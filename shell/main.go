@@ -16,6 +16,8 @@ func main() {
 
 	listIncidentsCommand := flag.Bool("list-incidents", false, "list incidents")
 	showIncidentIdentifier := flag.String("show-incident", "", "show incidents")
+	deleteIncidentIdentifier := flag.String("delete-incident", "", "delete incident")
+
 	createIncidentSummary := flag.String("create-incident", "", "incident summary description")
 	incidentResolutionSummary := flag.String("resolve-incident", "", "incident resolution description")
 
@@ -39,6 +41,10 @@ func main() {
 
 	if *showIncidentIdentifier != "" {
 		showIncident(*showIncidentIdentifier)
+	}
+
+	if *deleteIncidentIdentifier != "" {
+		deleteIncident(*deleteIncidentIdentifier)
 	}
 
 	if *createIncidentSummary != "" {
@@ -97,6 +103,15 @@ func showIncident(incidentIdentifier string) {
 	}
 
 	fmt.Println("Showing incident:", incidentIdentifier)
+}
+
+func deleteIncident(incidentIdentifier string) {
+	if strings.HasPrefix(incidentIdentifier, "-") {
+		fmt.Println(formatError(incidentIdentifier, "incident identifier"))
+		return
+	}
+
+	fmt.Println("Deleted incident:", incidentIdentifier)
 }
 
 // createIncident creates a new incident with the given summary.
@@ -171,6 +186,7 @@ func showHelpText() {
 	text.WriteString("Usage:\n")
 	text.WriteString("  -list-incidents\n")
 	text.WriteString("  -show-incident 'ICD001'\n")
+	text.WriteString("  -delete-incident 'ICD001'\n")
 	text.WriteString("  -create-incident 'The website is broken!'\n")
 	text.WriteString("  -resolve-incident 'The database is working again!'\n")
 
