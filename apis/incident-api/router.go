@@ -14,6 +14,7 @@ func CreateRouter(mongoClient *mongo.Client) *gin.Engine {
 	router.Use(mongoconnection.InjectAsMiddleware(mongoClient))
 
 	// Set up routes to API endpoints
+	router.DELETE("/incidents/:id", routes.DeleteIncidentById)
 	router.GET("/incidents", routes.GetIncidents)
 	router.GET("/incidents/:id", routes.GetIncidentById)
 
