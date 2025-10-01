@@ -9,6 +9,7 @@ import (
 
 	"github.com/rarelyprolific/dexterity/shell/incident"
 	"github.com/rarelyprolific/dexterity/shell/task"
+	"github.com/rarelyprolific/dexterity/shell/wiki"
 )
 
 func main() {
@@ -24,6 +25,8 @@ func main() {
 	listTasksCommand := flag.Bool("list-tasks", false, "list tasks")
 	createTaskSummary := flag.String("create-task", "", "task summary description")
 	exampleJsonRequest := flag.Bool("example-json-request", false, "make an example request for JSON content")
+
+	listWikiPagesCommand := flag.Bool("list-wiki-pages", false, "list wiki pages")
 
 	flag.Usage = showHelpText
 
@@ -65,6 +68,10 @@ func main() {
 
 	if *exampleJsonRequest {
 		fmt.Println(getJsonContent("http://localhost:8080/realms/master/.well-known/openid-configuration", true))
+	}
+
+	if *listWikiPagesCommand {
+		listWikiPages()
 	}
 }
 
@@ -171,6 +178,33 @@ func createTask(taskSummary string) {
 	fmt.Println("A task has been created:", taskSummary)
 }
 
+// listWikiPages lists wiki pages.
+func listWikiPages() {
+	wikiApiUri := os.Getenv("WIKI_API_URI")
+
+	if wikiApiUri == "" {
+		wikiApiUri = "http://localhost:8930"
+	}
+
+	wikiPages := getJsonContent(wikiApiUri+"/wiki", false)
+
+	var pageReferenceList []wiki.PageReference
+
+	err := json.Unmarshal([]byte(wikiPages), &pageReferenceList)
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Listing all wiki pages (ID  |  Title  |  ShortLink  |  Created On  |  Created By  ):")
+
+	for _, page := range pageReferenceList {
+		fmt.Printf("%s  |  %s  |  %s  |  %s  |  %s\n", page.ID, page.Title, page.ShortLink, page.CreatedOn.Format("2006-01-02 15:04:05"), page.CreatedBy)
+	}
+
+	fmt.Println(len(pageReferenceList), "tasks found!")
+}
+
 // formatError builds an error string relating to an invalid command line argument.
 func formatError(invalidValue string, description string) string {
 	return fmt.Sprintf("ERROR! The value [%s] is not a valid %s!", invalidValue, description)
@@ -194,6 +228,10 @@ func showHelpText() {
 
 	text.WriteString("  -list-tasks\n")
 	text.WriteString("  -create-task 'Add user login'\n")
+
+	text.WriteString("\n")
+
+	text.WriteString("  -list-wiki-pages\n")
 
 	text.WriteString("\nDebug:\n")
 	text.WriteString("  -example-json-request  -  Makes an example HTTP call to get Keycloak sign on discovery JSON\n")

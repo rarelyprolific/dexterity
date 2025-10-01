@@ -20,3 +20,5 @@ spec:
           value: "http://{{ $.Release.Name }}-incidentapi.default.svc.cluster.local"
         - name: TASK_API_URI
           value: "http://{{ $.Release.Name }}-taskapi.default.svc.cluster.local"
+        - name: WIKI_API_URI
+          value: "http://{{ $.Release.Name }}-wikiapi.default.svc.cluster.local"

@@ -53,6 +53,18 @@ services:
     environment:
       - MONGODB_URI=mongodb://mongodb:27017
 
+  wikiapi:
+    build:
+      context: apis/wiki-api
+    image: rarelyprolific/dexterity-wikiapi:latest
+    container_name: wikiapi
+    depends_on:
+      - mongodb
+    ports:
+      - 8930:8900
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017
+
   # The command line tool is intended to be an easy way to interact with the system and prove connectivity before creating a UI.
   # It allows us to verify everything works both inside the internal network (via this "shell" container) and we can connect to
   # frontend endpoints from outside the network (by running the command line tool on a host or other machine).
@@ -68,6 +80,7 @@ services:
     environment:
       - INCIDENT_API_URI=http://incidentapi:8900
       - TASK_API_URI=http://taskapi:8900
+      - WIKI_API_URI=http://wikiapi:8900
 
 volumes:
   mongo_data:
